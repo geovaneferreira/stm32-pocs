@@ -157,7 +157,7 @@ void StartInitTask(void *argument)
 void StartTaskRadio(void *argument)
 {
   /* USER CODE BEGIN StartTaskRadio */
-	master = 1;
+	master = 0;
 	if (master == 1) {
 		printf("Mode: Master\r\n");
 		HAL_GPIO_WritePin(LED_TARGET_GPIO_Port, LED_TARGET_Pin, GPIO_PIN_RESET);
@@ -178,9 +178,9 @@ void StartTaskRadio(void *argument)
 	SX1278.hw = &SX1278_hw;
 
 	printf("Configuring LoRa module\r\n");
-	//SX1278_init(&SX1278, 434000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7,
-	SX1278_init(&SX1278, 433000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7,
-	SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_DIS, 8);
+	//SX1278_init(&SX1278, 433000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7, SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_DIS, 8);
+	//SX1278_init(&SX1278, 903000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7, SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 8);
+	SX1278_init(&SX1278, 903000000, SX1278_POWER_17DBM, SX1278_LORA_SF_11, SX1278_LORA_BW_500KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 8);
 	printf("Done configuring LoRaModule\r\n");
 
 	if (master == 1) {
@@ -220,7 +220,14 @@ void StartTaskRadio(void *argument)
 		if (ret > 0) {
 			SX1278_read(&SX1278, (uint8_t*) buffer, ret);
 			printf("Content (%d): %s\r\n", ret, buffer);
-			printf("Package received ...\r\n");
+			for(int i=0;i<ret; i++){
+				if(buffer[i] <= 0xF){
+					printf("0x0%x,", buffer[i]);
+				} else {
+					printf("0x%x,", buffer[i]);
+				}
+			}
+			printf("\nPackage received ...\r\n");
 		}
 
 	}
